@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 
+#include "token.h"
 #include "lexer.h"
 #include "parser.h"
 #include "ast.h"
@@ -39,15 +40,15 @@ static void repl() {
     std::cout << "ready> ";
 
     switch (CurTok) {
-    case tok_eof:
+    case Token::tok_eof:
       return;
     case ';': // ignore top-level semicolons.
       getNextToken();
       break;
-    case tok_def:
+    case Token::tok_def:
       handle_definition();
       break;
-    case tok_extern:
+    case Token::tok_extern:
       handle_extern();
       break;
     default:

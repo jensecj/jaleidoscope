@@ -4,23 +4,11 @@
 #include <unordered_map>
 #include <vector>
 
-// The lexer returns tokens [0-255] if it is an unknown character, otherwise one
-// of these for known things.
-enum Token {
-            tok_eof = -1,
+#include "token.h"
 
-            // commands
-            tok_def = -2,
-            tok_extern = -3,
-
-            // primary
-            tok_identifier = -4,
-            tok_number = -5,
-};
-
-static std::unordered_map<std::string, Token> token_map =
-  {{"def", tok_def},
-   {"extern", tok_extern}};
+static std::unordered_map<std::string, Token::Token> token_map =
+  {{"def", Token::tok_def},
+   {"extern", Token::tok_extern}};
 
 static std::string IdentifierStr; // Filled in if tok_identifier
 static double NumVal;             // Filled in if tok_number
@@ -53,7 +41,7 @@ static int eat() {
       return token_map[IdentifierStr];
     }
 
-    return tok_identifier;
+    return Token::tok_identifier;
   }
 
   // Number: [0-9.]+
@@ -65,7 +53,7 @@ static int eat() {
     } while (isdigit(current_char) || current_char == '.');
 
     NumVal = strtod(num.c_str(), nullptr);
-    return tok_number;
+    return Token::tok_number;
   }
 
   if (current_char == '#') {
@@ -82,7 +70,7 @@ static int eat() {
 
   // Check for end of file.  Don't eat the EOF.
   if (current_char == EOF) {
-    return tok_eof;
+    return Token::tok_eof;
   }
 
   // Otherwise, just return the character as its ascii value.

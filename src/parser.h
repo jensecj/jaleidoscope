@@ -7,6 +7,7 @@
 
 #include "llvm/ADT/STLExtras.h"
 
+#include "token.h"
 #include "ast.h"
 
 /// CurTok/getNextToken - Provide a simple token buffer.  CurTok is the current
@@ -123,9 +124,9 @@ static std::unique_ptr<ExprAST> ParseIdentifierExpr() {
 ///   ::= parenexpr
 static std::unique_ptr<ExprAST> ParsePrimary() {
   switch (CurTok) {
-  case tok_identifier:
+  case Token::tok_identifier:
     return ParseIdentifierExpr();
-  case tok_number:
+  case Token::tok_number:
     return ParseNumberExpr();
   case '(':
     return ParseParenExpr();
@@ -187,7 +188,7 @@ static std::unique_ptr<ExprAST> ParseExpression() {
 /// prototype
 ///   ::= id '(' id* ')'
 static std::unique_ptr<PrototypeAST> ParsePrototype() {
-  if (CurTok != tok_identifier) {
+  if (CurTok != Token::tok_identifier) {
     return LogErrorP("Expected function name in prototype");
   }
 
@@ -199,7 +200,7 @@ static std::unique_ptr<PrototypeAST> ParsePrototype() {
   }
 
   std::vector<std::string> ArgNames;
-  while (getNextToken() == tok_identifier) {
+  while (getNextToken() == Token::tok_identifier) {
     ArgNames.push_back(IdentifierStr);
   }
 
