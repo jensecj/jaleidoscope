@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(CLEAN_PROJECT CXX)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-set(flags "-std=c++17")
+set(flags "-std=c++2a")
 set(debug_flags "-O0 -g1")
 set(release_flags "-O2 -DNDEBUG")
 set(warnings "-Wall -Wextra -Wpedantic")
