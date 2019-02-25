@@ -66,12 +66,25 @@ int main() {
   BinopPrecedence['-'] = 20;
   BinopPrecedence['*'] = 40; // highest.
 
-  // Prime the first token.
-  std::cout << "ready> ";
-  getNextToken();
+  while (true) {
+    std::cout << ">> ";
+    std::string inp;
+    getline(std::cin, inp);
 
-  // Run the main "interpreter loop" now.
-  repl();
+    auto out = lex(inp);
+    for (auto& o : out) {
+      std::cout << o << " ";
+    }
+
+    std::cout << std::endl;
+  }
+
+  // // Prime the first token.
+  // std::cout << "ready> ";
+  // getNextToken();
+
+  // // Run the main "interpreter loop" now.
+  // repl();
 
   return 0;
 }
