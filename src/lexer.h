@@ -4,6 +4,7 @@
 #include <string_view>
 #include <unordered_map>
 #include <vector>
+#include <tuple>
 
 #include "token.h"
 
@@ -110,6 +111,22 @@ int eat_line(int point, std::string_view s) {
   return point;
 }
 
+std::tuple<int, Token::Token> eat_identifier(int point, std::string_view s) {
+  char current_char = look(point, s);
+
+  IdentifierStr = current_char;
+
+  while (isalnum((current_char = look(++point, s)))) {
+    IdentifierStr += current_char;
+  }
+
+  if (token_map.find(IdentifierStr) != token_map.end()) {
+    return std::make_tuple(point, token_map[IdentifierStr]);
+  }
+
+  return std::make_tuple(point, Token::tok_identifier);
+}
+
 std::vector<Token::Token> _lex(int point, std::string_view input) {
   std::vector<Token::Token> output;
 
@@ -119,20 +136,20 @@ std::vector<Token::Token> _lex(int point, std::string_view input) {
     point = eat_whitespace(point, input);
     current_char = look(point, input);
 
+    // one-line comments
+    if (current_char == '#') {
+      point = eat_line(point, input);
+      current_char = look(point, input);
+    }
+
     // identifier: [a-zA-Z][a-zA-Z0-9]*
     if (isalpha(current_char)) {
-      IdentifierStr = current_char;
+      auto [p, t] = eat_identifier(point, input);
 
-      while (isalnum((current_char = look(++point, input)))) {
-        IdentifierStr += current_char;
-      }
+      point = p;
+      current_char = look(point, input);
 
-      if (token_map.find(IdentifierStr) != token_map.end()) {
-        output.push_back(token_map[IdentifierStr]);
-        continue;
-      }
-
-      output.push_back(Token::tok_identifier);
+      output.push_back(t);
       continue;
     }
 
@@ -146,13 +163,9 @@ std::vector<Token::Token> _lex(int point, std::string_view input) {
       } while (isdigit(current_char) || current_char == '.');
 
       NumVal = strtod(num.c_str(), nullptr);
+
       output.push_back(Token::tok_number);
       continue;
-    }
-
-    if (current_char == '#') {
-      point = eat_line(point, input);
-      current_char = look(point, input);
     }
 
     switch (current_char) {
