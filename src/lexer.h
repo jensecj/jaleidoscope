@@ -127,6 +127,20 @@ std::tuple<int, Token::Token> eat_identifier(int point, std::string_view s) {
   return std::make_tuple(point, Token::tok_identifier);
 }
 
+std::tuple<int, Token::Token> eat_number(int point, std::string_view s) {
+  int current_char = look(point, s);
+  std::string num;
+
+  do {
+    num += current_char;
+    current_char = look(++point, s);
+  } while (isdigit(current_char) || current_char == '.');
+
+  NumVal = strtod(num.c_str(), nullptr);
+
+  return std::make_tuple(point, Token::tok_number);
+}
+
 std::vector<Token::Token> _lex(int point, std::string_view input) {
   std::vector<Token::Token> output;
 
@@ -154,17 +168,13 @@ std::vector<Token::Token> _lex(int point, std::string_view input) {
     }
 
     // Number: [0-9.]+
-    if (isdigit(current_char) || current_char == '.') {
-      std::string num;
+    if (isdigit(current_char)) {
+      auto [p, t] = eat_number(point, input);
 
-      do {
-        num += current_char;
-        current_char = look(++point, input);
-      } while (isdigit(current_char) || current_char == '.');
+      point = p;
+      current_char = look(point, input);
 
-      NumVal = strtod(num.c_str(), nullptr);
-
-      output.push_back(Token::tok_number);
+      output.push_back(t);
       continue;
     }
 
