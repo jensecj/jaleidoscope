@@ -125,7 +125,7 @@ int eat_line(int point, std::string_view s) {
   return point;
 }
 
-std::tuple<int, Token::Token> eat_identifier(int point, std::string_view s) {
+std::tuple<int, Token::Token> tokenize_identifier(int point, std::string_view s) {
   char current_char = look(point, s);
 
   IdentifierStr = current_char;
@@ -141,7 +141,7 @@ std::tuple<int, Token::Token> eat_identifier(int point, std::string_view s) {
   return std::make_tuple(point, Token::tok_identifier);
 }
 
-std::tuple<int, Token::Token> eat_number(int point, std::string_view s) {
+std::tuple<int, Token::Token> tokenize_number(int point, std::string_view s) {
   int current_char = look(point, s);
   std::string num;
 
@@ -170,7 +170,7 @@ std::vector<Token::Token> _lex(int point, std::string_view input) {
     }
 
     if (is_identifier(point, input)) {
-      auto [p, t] = eat_identifier(point, input);
+      auto [p, t] = tokenize_identifier(point, input);
 
       point = p;
       current_char = look(point, input);
@@ -180,7 +180,7 @@ std::vector<Token::Token> _lex(int point, std::string_view input) {
     }
 
     if (is_number(point, input)) {
-      auto [p, t] = eat_number(point, input);
+      auto [p, t] = tokenize_number(point, input);
 
       point = p;
       current_char = look(point, input);
@@ -204,8 +204,6 @@ std::vector<Token::Token> _lex(int point, std::string_view input) {
     case EOF: output.push_back(Token::tok_eof); break;
     }
 
-    // Otherwise, just return the character as its ascii value.
-    // int previous_char = current_char;
     current_char = look(++point, input);
   }
 
