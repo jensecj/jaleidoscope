@@ -93,6 +93,20 @@ char look(int point, std::string_view s) {
   }
 }
 
+bool is_one_line_comment(int point, std::string_view s) {
+  return look(point, s) == '#';
+}
+
+bool is_identifier(int point, std::string_view s) {
+  // identifier: [a-zA-Z][a-zA-Z0-9]*
+  return isalpha(look(point, s));
+}
+
+bool is_number(int point, std::string_view s) {
+  // number: [0-9.]+
+  return isdigit(look(point, s));
+}
+
 int eat_whitespace(int point, std::string_view s) {
   while (isspace(look(point, s))) {
     point++;
@@ -150,14 +164,12 @@ std::vector<Token::Token> _lex(int point, std::string_view input) {
     point = eat_whitespace(point, input);
     current_char = look(point, input);
 
-    // one-line comments
-    if (current_char == '#') {
+    if (is_one_line_comment(point, input)) {
       point = eat_line(point, input);
       current_char = look(point, input);
     }
 
-    // identifier: [a-zA-Z][a-zA-Z0-9]*
-    if (isalpha(current_char)) {
+    if (is_identifier(point, input)) {
       auto [p, t] = eat_identifier(point, input);
 
       point = p;
@@ -167,8 +179,7 @@ std::vector<Token::Token> _lex(int point, std::string_view input) {
       continue;
     }
 
-    // Number: [0-9.]+
-    if (isdigit(current_char)) {
+    if (is_number(point, input)) {
       auto [p, t] = eat_number(point, input);
 
       point = p;
