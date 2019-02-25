@@ -19,18 +19,18 @@ enum Token {
 static std::string IdentifierStr; // Filled in if tok_identifier
 static double NumVal;             // Filled in if tok_number
 
-/// gettok - Return the next token from standard input.
-static int gettok() {
-  static int LastChar = ' ';
+/// Return the next token from standard input.
+static int eat() {
+  static int current_char = ' ';
 
   // Skip any whitespace.
-  while (isspace(LastChar))
-    LastChar = getchar();
+  while (isspace(current_char))
+    current_char = getchar();
 
-  if (isalpha(LastChar)) { // identifier: [a-zA-Z][a-zA-Z0-9]*
-    IdentifierStr = LastChar;
-    while (isalnum((LastChar = getchar())))
-      IdentifierStr += LastChar;
+  if (isalpha(current_char)) { // identifier: [a-zA-Z][a-zA-Z0-9]*
+    IdentifierStr = current_char;
+    while (isalnum((current_char = getchar())))
+      IdentifierStr += current_char;
 
     if (IdentifierStr == "def")
       return tok_def;
@@ -39,33 +39,33 @@ static int gettok() {
     return tok_identifier;
   }
 
-  if (isdigit(LastChar) || LastChar == '.') { // Number: [0-9.]+
+  if (isdigit(current_char) || current_char == '.') { // Number: [0-9.]+
     std::string NumStr;
     do {
-      NumStr += LastChar;
-      LastChar = getchar();
-    } while (isdigit(LastChar) || LastChar == '.');
+      NumStr += current_char;
+      current_char = getchar();
+    } while (isdigit(current_char) || current_char == '.');
 
     NumVal = strtod(NumStr.c_str(), nullptr);
     return tok_number;
   }
 
-  if (LastChar == '#') {
+  if (current_char == '#') {
     // Comment until end of line.
     do
-      LastChar = getchar();
-    while (LastChar != EOF && LastChar != '\n' && LastChar != '\r');
+      current_char = getchar();
+    while (current_char != EOF && current_char != '\n' && current_char != '\r');
 
-    if (LastChar != EOF)
-      return gettok();
+    if (current_char != EOF)
+      return eat();
   }
 
   // Check for end of file.  Don't eat the EOF.
-  if (LastChar == EOF)
+  if (current_char == EOF)
     return tok_eof;
 
   // Otherwise, just return the character as its ascii value.
-  int ThisChar = LastChar;
-  LastChar = getchar();
-  return ThisChar;
+  int previous_char = current_char;
+  current_char = getchar();
+  return previous_char;
 }
