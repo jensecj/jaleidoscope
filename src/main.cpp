@@ -5,28 +5,28 @@
 #include "parser.h"
 #include "ast.h"
 
-static void HandleDefinition() {
+static void handle_definition() {
   if (ParseDefinition()) {
-    fprintf(stderr, "Parsed a function definition.\n");
+    std::cerr << "Parsed a function definition." << std::endl;
   } else {
     // Skip token for error recovery.
     getNextToken();
   }
 }
 
-static void HandleExtern() {
+static void handle_extern() {
   if (ParseExtern()) {
-    fprintf(stderr, "Parsed an extern\n");
+    std::cout << "Parsed an extern." << std::endl;
   } else {
     // Skip token for error recovery.
     getNextToken();
   }
 }
 
-static void HandleTopLevelExpression() {
+static void handle_top_level_expression() {
   // Evaluate a top-level expression into an anonymous function.
   if (ParseTopLevelExpr()) {
-    fprintf(stderr, "Parsed a top-level expr\n");
+    std::cout << "Parsed a top-level expr." << std::endl;
   } else {
     // Skip token for error recovery.
     getNextToken();
@@ -36,7 +36,8 @@ static void HandleTopLevelExpression() {
 /// top ::= definition | external | expression | ';'
 static void repl() {
   while (true) {
-    fprintf(stderr, "ready> ");
+    std::cout << "ready> ";
+
     switch (CurTok) {
     case tok_eof:
       return;
@@ -44,18 +45,17 @@ static void repl() {
       getNextToken();
       break;
     case tok_def:
-      HandleDefinition();
+      handle_definition();
       break;
     case tok_extern:
-      HandleExtern();
+      handle_extern();
       break;
     default:
-      HandleTopLevelExpression();
+      handle_top_level_expression();
       break;
     }
   }
 }
-
 
 int main() {
   // Install standard binary operators.
@@ -66,7 +66,7 @@ int main() {
   BinopPrecedence['*'] = 40; // highest.
 
   // Prime the first token.
-  fprintf(stderr, "ready> ");
+  std::cout << "ready> ";
   getNextToken();
 
   // Run the main "interpreter loop" now.

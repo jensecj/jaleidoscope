@@ -13,7 +13,7 @@
 /// token the parser is looking at.  getNextToken reads another token from the
 /// lexer and updates CurTok with its results.
 static int CurTok;
-static int getNextToken() { return CurTok = gettok(); }
+static int getNextToken() { return CurTok = eat(); }
 
 /// BinopPrecedence - This holds the precedence for each binary operator that is
 /// defined.
@@ -21,13 +21,16 @@ static std::map<char, int> BinopPrecedence;
 
 /// GetTokPrecedence - Get the precedence of the pending binary operator token.
 static int GetTokPrecedence() {
-  if (!isascii(CurTok))
+  if (!isascii(CurTok)) {
     return -1;
+  }
 
   // Make sure it's a declared binop.
   int TokPrec = BinopPrecedence[CurTok];
-  if (TokPrec <= 0)
+  if (TokPrec <= 0) {
     return -1;
+  }
+
   return TokPrec;
 }
 
